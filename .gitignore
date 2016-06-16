@@ -1,0 +1,19 @@
+# Java
+*.class
+
+# Eclipse stuff
+bin/
+.project
+.classpath
+.settings/
+*.launch
+
+# Maven
+target/
+
+# Mac stuff
+*.DS_Store
+
+# Files with sensitive information. Hiding them like this actually works in Eclipse, but not when using git directly.
+#*BuildVars.java
+#src/main/webapp/WEB-INF/web.xml

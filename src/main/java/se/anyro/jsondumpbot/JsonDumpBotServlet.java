@@ -23,6 +23,13 @@ import se.anyro.tgbotapi.TgBotApi.ErrorListener;
 import se.anyro.tgbotapi.types.Message;
 import se.anyro.tgbotapi.types.ParseMode;
 import se.anyro.tgbotapi.types.Update;
+import se.anyro.tgbotapi.types.inline.CallbackQuery;
+import se.anyro.tgbotapi.types.inline.InlineQuery;
+import se.anyro.tgbotapi.types.inline.InlineQueryResult;
+import se.anyro.tgbotapi.types.inline.InlineQueryResultArticle;
+import se.anyro.tgbotapi.types.inline.InputTextMessageContent;
+import se.anyro.tgbotapi.types.reply_markup.InlineKeyboardButton;
+import se.anyro.tgbotapi.types.reply_markup.InlineKeyboardMarkup;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -68,12 +75,19 @@ public class JsonDumpBotServlet extends HttpServlet implements ErrorListener {
             String json = readFully(req.getReader());
             Update update = api.parseFromWebhook(json);
 
-            api.sendMessage(update.fromUserId(), makePrettyJson(json), ParseMode.MARKDOWN, true, 0, null);
+            String prettyJson = makePrettyJson(json);
+            api.sendMessage(update.fromUserId(), prettyJson, ParseMode.MARKDOWN, true, 0, null);
 
             if (update.isMessage()) {
                 handleMessage(update.message);
             } else if (update.isCallbackQuery()) {
-                inlineKeyboard.handleCallbackQuery(update.callback_query);
+                CallbackQuery callbackQuery = update.callback_query;
+                inlineKeyboard.handleCallbackQuery(callbackQuery);
+                if (callbackQuery.inline_message_id != null) {
+                    api.editMessageText(callbackQuery.inline_message_id, prettyJson, ParseMode.MARKDOWN, true, null);
+                }
+            } else if (update.isInlineQuery()) {
+                handleInlineQuery(update.inline_query, prettyJson);
             }
         } catch (Exception e) {
             api.debug(e);
@@ -130,8 +144,20 @@ public class JsonDumpBotServlet extends HttpServlet implements ErrorListener {
         }
     }
 
+    public void handleInlineQuery(InlineQuery inlineQuery, String json) throws IOException {
+        InputTextMessageContent content = new InputTextMessageContent(json, ParseMode.MARKDOWN, true);
+        InlineQueryResultArticle article = new InlineQueryResultArticle("MY_ID", "My Title", content);
+        article.description = "My description";
+        article.reply_markup = InlineKeyboardMarkup.createVertical(InlineKeyboardButton.callbackData(
+                "My inline button", "MY_DATA"));
+        InlineQueryResult[] results = { article };
+        api.answerInlineQuery(inlineQuery.id, results, true);
+    }
+
     @Override
     public void onError(int errorCode, String description) {
-        api.debug(new Exception("ErrorCode " + errorCode + ", " + description));
+        if (errorCode != 403) {
+            api.debug(new Exception("ErrorCode " + errorCode + ", " + description));
+        }
     }
 }

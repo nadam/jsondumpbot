@@ -76,7 +76,11 @@ public class JsonDumpBotServlet extends HttpServlet implements ErrorListener {
             Update update = api.parseFromWebhook(json);
 
             String prettyJson = makePrettyJson(json);
-            api.sendMessage(update.fromUserId(), prettyJson, ParseMode.MARKDOWN, true, 0, null);
+            int userId = update.fromUserId();
+            if (userId == 0) {
+                userId = OWNER;
+            }
+            api.sendMessage(userId, prettyJson, ParseMode.MARKDOWN, true, 0, null);
 
             if (update.isMessage()) {
                 handleMessage(update.message);

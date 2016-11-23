@@ -4,12 +4,12 @@ import java.io.IOException;
 
 import se.anyro.tgbotapi.TgBotApi;
 import se.anyro.tgbotapi.types.Message;
-import se.anyro.tgbotapi.types.reply_markup.ReplyKeyboardHide;
+import se.anyro.tgbotapi.types.reply_markup.ReplyKeyboardRemove;
 import se.anyro.tgbotapi.types.reply_markup.ReplyMarkup;
 
 public class HideKeyboard extends Command {
 
-    private static final ReplyMarkup REPLY_KEYBOARD_HIDE = new ReplyKeyboardHide();
+    private static final ReplyMarkup REPLY_KEYBOARD_HIDE = new ReplyKeyboardRemove();
 
     public HideKeyboard(TgBotApi api) {
         super(api);

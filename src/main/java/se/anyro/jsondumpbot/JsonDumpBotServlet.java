@@ -71,11 +71,13 @@ public class JsonDumpBotServlet extends HttpServlet implements ErrorListener {
 
         resp.setStatus(200);
 
+        String prettyJson = null;
+
         try {
             String json = readFully(req.getReader());
             Update update = api.parseFromWebhook(json);
 
-            String prettyJson = makePrettyJson(json);
+            prettyJson = makePrettyJson(json);
             int userId = update.fromUserId();
             if (userId == 0) {
                 userId = OWNER;
@@ -94,7 +96,11 @@ public class JsonDumpBotServlet extends HttpServlet implements ErrorListener {
                 handleInlineQuery(update.inline_query, prettyJson);
             }
         } catch (Exception e) {
-            api.debug(e);
+            if (prettyJson != null) {
+                api.debug(prettyJson, e);
+            } else {
+                api.debug(e);
+            }
         }
     }
 

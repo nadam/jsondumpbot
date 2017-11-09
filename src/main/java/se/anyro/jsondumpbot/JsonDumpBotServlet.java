@@ -19,7 +19,6 @@ import se.anyro.jsondumpbot.command.HideKeyboard;
 import se.anyro.jsondumpbot.command.InlineKeyboard;
 import se.anyro.jsondumpbot.command.Keyboard;
 import se.anyro.tgbotapi.TgBotApi;
-import se.anyro.tgbotapi.TgBotApi.ErrorListener;
 import se.anyro.tgbotapi.types.Message;
 import se.anyro.tgbotapi.types.ParseMode;
 import se.anyro.tgbotapi.types.Update;
@@ -41,7 +40,7 @@ import com.google.gson.JsonPrimitive;
  * Main servlet class receiving messages and processing the commands.
  */
 @SuppressWarnings("serial")
-public class JsonDumpBotServlet extends HttpServlet implements ErrorListener {
+public class JsonDumpBotServlet extends HttpServlet {
 
     private TgBotApi api;
     private Map<String, Command> commands = new LinkedHashMap<>();
@@ -52,7 +51,7 @@ public class JsonDumpBotServlet extends HttpServlet implements ErrorListener {
 
     public JsonDumpBotServlet() {
         super();
-        api = new TgBotApi(TOKEN, OWNER, this);
+        api = new TgBotApi(TOKEN, OWNER);
         addCommand(new Help(api, commands.values()));
         addCommand(new Keyboard(api));
         inlineKeyboard = new InlineKeyboard(api);
@@ -82,6 +81,13 @@ public class JsonDumpBotServlet extends HttpServlet implements ErrorListener {
             if (userId == 0) {
                 userId = OWNER;
             }
+
+            if (update.isChannelPost()) {
+                api.debug("Leaving " + update.channel_post.chat.title + " @" + update.channel_post.chat.username);
+                api.leaveChat(update.channel_post.chat.id);
+                return;
+            }
+
             api.sendMessage(userId, prettyJson, ParseMode.MARKDOWN, true, 0, null);
 
             if (update.isMessage()) {
@@ -162,12 +168,5 @@ public class JsonDumpBotServlet extends HttpServlet implements ErrorListener {
                 "My inline button", "MY_DATA"));
         InlineQueryResult[] results = { article };
         api.answerInlineQuery(inlineQuery.id, results, true);
-    }
-
-    @Override
-    public void onError(int errorCode, String description) {
-        if (errorCode != 403) {
-            api.debug(new Exception("ErrorCode " + errorCode + ", " + description));
-        }
     }
 }

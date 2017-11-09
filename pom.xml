@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <packaging>war</packaging>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
 
     <groupId>se.anyro.jsondumpbot</groupId>
     <artifactId>jsondumpbot</artifactId>
@@ -11,7 +11,7 @@
     <properties>
         <app.id>jsondumpbot</app.id>
         <app.version>1</app.version>
-        <tgbotapi.version>1.1-SNAPSHOT</tgbotapi.version>
+        <tgbotapi.version>1.6-SNAPSHOT</tgbotapi.version>
         <appengine.version>1.9.46</appengine.version>
         <gcloud.plugin.version>0.9.58.v20150505</gcloud.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

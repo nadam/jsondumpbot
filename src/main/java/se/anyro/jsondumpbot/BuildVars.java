@@ -1,6 +1,6 @@
 package se.anyro.jsondumpbot;
 
 public class BuildVars {
-    public static final int OWNER = 44830052;
-    public static final String TOKEN = "216729606:AAE-CQh79Vk0rVCSkj81xR1lBLpUnzEMktc";
+    public static final int OWNER = // Your user id here. Send message to @userinfobot to get it.
+    public static final String TOKEN = // Your bot token here. Use @BotFather.
 }
